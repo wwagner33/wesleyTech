@@ -1,0 +1,20 @@
+{
+  "name": "wesleytech",
+  "version": "1.0.0",
+  "description": "Loja de Produtos de TI Wesley &amp; Associates Inc.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "firebase": "^10.13.0",
+    "firebase-admin": "^12.3.1",
+    "jsonwebtoken": "^9.0.2",
+    "pug": "^3.0.3"
+  }
+}
