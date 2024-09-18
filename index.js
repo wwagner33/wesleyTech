@@ -94,6 +94,11 @@ const produtos = [
     // ... outros produtos
 ];
 
+//Rota de Listagem de produtos
+app.get("/listaprodutos", (req, res) => {
+    res.send(produtos);
+});
+
 // Rota protegida - Produtos
 app.get("/produtos", authMiddleware, (req, res) => {
     res.render("produtos", {

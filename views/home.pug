@@ -10,5 +10,7 @@ block content
           h3= produto.nome
           p Descrição: #{produto.descricao}
           p Preço: R$ #{produto.preco}
+        
     else
       p Nenhum produto disponível no momento.
+    a(href="/listaprodutos") Consulta Produtos
