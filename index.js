@@ -1,8 +1,11 @@
 const express = require("express");
 const crypto = require("crypto");
+// const lf = require("./leticiaFramework.js");
 const app = express();
 
-app.use(eudxpress.static("./public")); //Define o local dos arquivos estáticos
+// console.log(lf.soma(10, 4.5), lf.outra);
+
+app.use(express.static("./public")); //Define o local dos arquivos estáticos
 app.set("view engine", "pug"); //Define o motor de renderizacao das minhas paginas dinamicas
 app.set("views", "./views"); //Define o local onde estão as minhas páginas dinâmicas
 
@@ -76,8 +79,8 @@ function gerarToken(user) {
 
 // Middleware de autenticação
 function authMiddleware(req, res, next) {
-    const {authToken } = req.query;
-    
+    const { authToken } = req.query;
+
     if (session.authToken === authToken) {
         req.user = session.user;
         console.log(session.user);
@@ -112,7 +115,11 @@ app.post("/authenticated", (req, res) => {
 
 // Rota protegida - Home
 app.get("/home", authMiddleware, (req, res) => {
-    res.render("home", { produtos, user: session.user, authToken: session.authToken });
+    res.render("home", {
+        produtos,
+        user: session.user,
+        authToken: session.authToken,
+    });
 });
 
 // Produtos para exibição
@@ -164,12 +171,12 @@ const produtos = [
 
 // Rota protegida - Produtos
 app.get("/produtos", authMiddleware, (req, res) => {
-    res.render("produtos",{authToken: session.authToken, produtos});
+    res.render("produtos", { authToken: session.authToken, produtos });
 });
 
 // Rota protegida - Cadastro
 app.get("/cadastro", authMiddleware, (req, res) => {
-    res.render("cadastro",{authToken: session.authToken});
+    res.render("cadastro", { authToken: session.authToken });
 });
 
 // Iniciar o servidor
