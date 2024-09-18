@@ -12,9 +12,9 @@ html(lang="pt-br")
         a.pure-menu-heading.pure-menu-link(href="/home") Home
         ul.pure-menu-list
           li.pure-menu-item
-            a.pure-menu-link(href=`/produtos`) Produtos
+            a.pure-menu-link(href=`/produtos?authToken=${authToken}`) Produtos
           li.pure-menu-item
-            a.pure-menu-link(href=`/cadastro`) Cadastro
+            a.pure-menu-link(href=`/cadastro?authToken=${authToken}`) Cadastro
     main
       block content
     footer
