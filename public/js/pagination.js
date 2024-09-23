@@ -1,16 +1,32 @@
+/**
+ * @description Função que pagina a exibição de um conjunto de objetos passados armazenados na forma de um vetor. 
+ *              Os itens são organizados dentro de uma HTML Table posicionada numa HTML 
+ *              Div previamente criada e identificada por 'paginating'
+ * @author Wellington W. F. Sarmento
+ * @since 2023-04-28
+ * @version 1.0.0
+ */
+
+/**
+ * @name createPaginatedTable
+ * @description Cria uma tabela paginada a partir de um array de objetos
+ * @param {string} divId - ID da div onde a tabela será exibida
+ * @param {Array} dataArray - Array de objetos a serem exibidos na tabela
+ * @param {number} itemsPerPage - Número de itens a serem exibidos por página
+ */
 function createPaginatedTable(dataArray, itemsPerPage) {
     // Clona o array original para evitar mutações externas
-    var data = JSON.parse(JSON.stringify(dataArray));
+    const data = JSON.parse(JSON.stringify(dataArray));
 
-    // Obtém a div com o id 'paged'
-    var pagedDiv = document.getElementById('paged');
+    // Obtém a div com o id 'paginating'
+    const pagedDiv = document.getElementById('pagination');
 
     // Calcula o número total de páginas
-    var totalItems = data.length;
-    var totalPages = Math.ceil(totalItems / itemsPerPage);
+    const totalItems = data.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage); //Retorna o menor número inteiro maior ou igual ao número passado como parâmetro
 
     // Página atual
-    var currentPage = 1;
+    let currentPage = 1;
 
     // Função para renderizar a tabela da página atual
     function renderTable() {
@@ -18,24 +34,24 @@ function createPaginatedTable(dataArray, itemsPerPage) {
         pagedDiv.innerHTML = '';
 
         // Cria o elemento da tabela
-        var table = document.createElement('table');
-        table.border = '1';
+        const table = document.createElement('table');
+        table.classList.add('paginated-table');
 
         // Cria o cabeçalho da tabela
-        var thead = document.createElement('thead');
-        var headerRow = document.createElement('tr');
+        const thead = document.createElement('thead');
+        const headerRow = document.createElement('tr');
 
         // Assume que todos os objetos têm as mesmas chaves
-        var keys = Object.keys(data[0]);
+        const keys = Object.keys(data[0]);
 
-        keys.forEach(function(key) {
-            var th = document.createElement('th');
+        keys.forEach(key => {
+            const th = document.createElement('th');
             th.innerText = key;
             headerRow.appendChild(th);
         });
 
         // Adiciona colunas para ações
-        var actionTh = document.createElement('th');
+        const actionTh = document.createElement('th');
         actionTh.innerText = 'Ações';
         headerRow.appendChild(actionTh);
 
@@ -43,63 +59,61 @@ function createPaginatedTable(dataArray, itemsPerPage) {
         table.appendChild(thead);
 
         // Cria o corpo da tabela
-        var tbody = document.createElement('tbody');
+        const tbody = document.createElement('tbody');
 
         // Calcula os índices de início e fim para a página atual
-        var startIndex = (currentPage - 1) * itemsPerPage;
-        var endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
 
-        var pageData = data.slice(startIndex, endIndex);
+        const pageData = data.slice(startIndex, endIndex);
 
-        pageData.forEach(function(item, index) {
-            var row = document.createElement('tr');
-            keys.forEach(function(key) {
-                var td = document.createElement('td');
+        const fragment = document.createDocumentFragment();
+
+        pageData.forEach((item, index) => {
+            const row = document.createElement('tr');
+            keys.forEach(key => {
+                const td = document.createElement('td');
                 td.innerText = item[key];
                 row.appendChild(td);
             });
 
             // Cria a célula de ações
-            var actionTd = document.createElement('td');
+            const actionTd = document.createElement('td');
 
             // Botão Editar
-            var editButton = document.createElement('button');
+            const editButton = document.createElement('button');
             editButton.innerText = 'Editar';
-            editButton.onclick = (function(rowIndex) {
-                return function() {
-                    editRow(rowIndex);
-                };
-            })(startIndex + index);
+            editButton.classList.add('edit-button');
+            editButton.onclick = () => editRow(startIndex + index);
             actionTd.appendChild(editButton);
 
             // Botão Remover
-            var deleteButton = document.createElement('button');
+            const deleteButton = document.createElement('button');
             deleteButton.innerText = 'Remover';
-            deleteButton.onclick = (function(rowIndex) {
-                return function() {
-                    deleteRow(rowIndex);
-                };
-            })(startIndex + index);
+            deleteButton.classList.add('delete-button');
+            deleteButton.onclick = () => deleteRow(startIndex + index);
             actionTd.appendChild(deleteButton);
 
             row.appendChild(actionTd);
 
-            tbody.appendChild(row);
+            fragment.appendChild(row);
         });
 
+        tbody.appendChild(fragment);
         table.appendChild(tbody);
 
         // Adiciona a tabela à div 'paged'
         pagedDiv.appendChild(table);
 
         // Cria os controles de paginação
-        var paginationDiv = document.createElement('div');
+        const paginationDiv = document.createElement('div');
+        paginationDiv.classList.add('pagination-controls');
 
         // Botão 'Anterior'
         if (currentPage > 1) {
-            var prevButton = document.createElement('button');
+            const prevButton = document.createElement('button');
             prevButton.innerText = 'Anterior';
-            prevButton.onclick = function() {
+            prevButton.onclick = () => {
                 currentPage--;
                 renderTable();
             };
@@ -107,27 +121,25 @@ function createPaginatedTable(dataArray, itemsPerPage) {
         }
 
         // Botões de número de página
-        for (var i = 1; i <= totalPages; i++) {
-            var pageButton = document.createElement('button');
+        for (let i = 1; i <= totalPages; i++) {
+            const pageButton = document.createElement('button');
             pageButton.innerText = i;
             if (i === currentPage) {
                 pageButton.disabled = true;
             } else {
-                pageButton.onclick = (function(page) {
-                    return function() {
-                        currentPage = page;
-                        renderTable();
-                    };
-                })(i);
+                pageButton.onclick = () => {
+                    currentPage = i;
+                    renderTable();
+                };
             }
             paginationDiv.appendChild(pageButton);
         }
 
         // Botão 'Próximo'
         if (currentPage < totalPages) {
-            var nextButton = document.createElement('button');
+            const nextButton = document.createElement('button');
             nextButton.innerText = 'Próximo';
-            nextButton.onclick = function() {
+            nextButton.onclick = () => {
                 currentPage++;
                 renderTable();
             };
@@ -140,17 +152,18 @@ function createPaginatedTable(dataArray, itemsPerPage) {
 
     // Função para editar uma linha
     function editRow(index) {
-        var item = data[index];
+        const item = data[index];
 
         // Cria um formulário de edição
-        var editForm = document.createElement('form');
+        const editForm = document.createElement('form');
+        editForm.classList.add('edit-form');
 
         // Cria campos de entrada para cada chave
-        var inputs = {};
-        for (var key in item) {
-            var label = document.createElement('label');
+        const inputs = {};
+        for (const key in item) {
+            const label = document.createElement('label');
             label.innerText = key + ': ';
-            var input = document.createElement('input');
+            const input = document.createElement('input');
             input.type = 'text';
             input.value = item[key];
             inputs[key] = input;
@@ -160,12 +173,12 @@ function createPaginatedTable(dataArray, itemsPerPage) {
         }
 
         // Botão Salvar
-        var saveButton = document.createElement('button');
+        const saveButton = document.createElement('button');
         saveButton.innerText = 'Salvar';
         saveButton.type = 'button';
-        saveButton.onclick = function() {
+        saveButton.onclick = () => {
             // Atualiza o objeto com os novos valores
-            for (var key in inputs) {
+            for (const key in inputs) {
                 item[key] = inputs[key].value;
             }
             renderTable();
@@ -174,10 +187,10 @@ function createPaginatedTable(dataArray, itemsPerPage) {
         editForm.appendChild(saveButton);
 
         // Botão Cancelar
-        var cancelButton = document.createElement('button');
+        const cancelButton = document.createElement('button');
         cancelButton.innerText = 'Cancelar';
         cancelButton.type = 'button';
-        cancelButton.onclick = function() {
+        cancelButton.onclick = () => {
             pagedDiv.removeChild(editForm);
         };
         editForm.appendChild(cancelButton);
